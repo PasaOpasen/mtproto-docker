@@ -10,7 +10,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 CONTAINER_NAME="mtproto-proxy"
-PORT="4443"
+PORT="443"
 FAKE_DOMAIN="${1:?set a domen like yar1.ru}"  # Фиксированный домен для Fake TLS
 
 echo "🚀 Запуск MTProto прокси с Fake TLS"
