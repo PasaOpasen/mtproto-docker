@@ -36,6 +36,12 @@ echo -e "   Случайное дополнение: ${RANDOM_HEX}"
 echo -e "   Секрет: ${YELLOW}${SECRET}${NC}"
 echo "   Длина: ${#SECRET} символов"
 
+# Останавливаем старый контейнер, если есть
+echo -n "🛑 Остановка старого контейнера... "
+docker stop ${CONTAINER_NAME} >/dev/null 2>&1
+docker rm ${CONTAINER_NAME} >/dev/null 2>&1
+echo -e "${GREEN}готово${NC}"
+
 # Проверяем, свободен ли порт 443
 echo -n "🔍 Проверка порта ${PORT}... "
 if ss -tuln | grep -q ":${PORT} "; then
@@ -52,11 +58,6 @@ else
     echo -e "${GREEN}свободен${NC}"
 fi
 
-# Останавливаем старый контейнер, если есть
-echo -n "🛑 Остановка старого контейнера... "
-docker stop ${CONTAINER_NAME} >/dev/null 2>&1
-docker rm ${CONTAINER_NAME} >/dev/null 2>&1
-echo -e "${GREEN}готово${NC}"
 
 # Запускаем официальный прокси от Telegram
 echo -n "📦 Запуск контейнера... "
@@ -86,14 +87,14 @@ if docker ps | grep -q ${CONTAINER_NAME}; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     # Сохраняем конфигурацию
-    cat > ~/mtproto_config.txt << EOF
+    cat > mtproto_config.txt << EOF
 SERVER=${SERVER_IP}
 PORT=${PORT}
 SECRET=${SECRET}
 DOMAIN=${FAKE_DOMAIN}
 LINK=tg://proxy?server=${SERVER_IP}&port=${PORT}&secret=${SECRET}
 EOF
-    echo "✅ Конфигурация сохранена в ~/mtproto_config.txt"
+    echo "✅ Конфигурация сохранена в mtproto_config.txt"
     
     # Показываем последние логи
     echo ""
