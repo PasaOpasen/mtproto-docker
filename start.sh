@@ -10,8 +10,8 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 CONTAINER_NAME="mtproto-proxy"
-PORT="443"
-FAKE_DOMAIN="ya.ru"  # Фиксированный домен для Fake TLS
+PORT="4443"
+FAKE_DOMAIN="${1:?set a domen like yar1.ru}"  # Фиксированный домен для Fake TLS
 
 echo "🚀 Запуск MTProto прокси с Fake TLS"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -54,13 +54,13 @@ fi
 
 # Останавливаем старый контейнер, если есть
 echo -n "🛑 Остановка старого контейнера... "
-sudo docker stop ${CONTAINER_NAME} >/dev/null 2>&1
-sudo docker rm ${CONTAINER_NAME} >/dev/null 2>&1
+docker stop ${CONTAINER_NAME} >/dev/null 2>&1
+docker rm ${CONTAINER_NAME} >/dev/null 2>&1
 echo -e "${GREEN}готово${NC}"
 
 # Запускаем официальный прокси от Telegram
 echo -n "📦 Запуск контейнера... "
-sudo docker run -d \
+docker run -d \
   --name ${CONTAINER_NAME} \
   --restart unless-stopped \
   -p ${PORT}:443 \
@@ -69,7 +69,7 @@ sudo docker run -d \
 
 # Проверяем результат
 sleep 3
-if sudo docker ps | grep -q ${CONTAINER_NAME}; then
+if docker ps | grep -q ${CONTAINER_NAME}; then
     SERVER_IP=$(curl -s ifconfig.me)
     
     echo -e "${GREEN}✅ УСПЕШНО${NC}"
@@ -98,9 +98,9 @@ EOF
     # Показываем последние логи
     echo ""
     echo "📋 Логи контейнера:"
-    sudo docker logs --tail 5 ${CONTAINER_NAME}
+    docker logs --tail 5 ${CONTAINER_NAME}
 else
     echo -e "${RED}❌ ОШИБКА${NC}"
-    sudo docker logs ${CONTAINER_NAME}
+    docker logs ${CONTAINER_NAME}
 fi
 
