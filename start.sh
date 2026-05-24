@@ -13,7 +13,6 @@ source utils.sh
 
 CONTAINER_NAME="${CONTAINER_NAME:-mtproto-proxy}"
 PORT="${PORT:-443}"
-FAKE_DOMAIN="${FAKE_DOMAIN:?set a domen like yar1.ru}"  # Фиксированный домен для Fake TLS
 
 SERVER_IP="${SERVER_IP}"
 if [ -z "${SERVER_IP}" ]
@@ -21,23 +20,23 @@ then
     SERVER_IP=$(curl -s ifconfig.me)
 fi
 
-# Цвета для красивого вывода
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
 
+if [ -z "$SECRET" ]
+then
 
-echo "🚀 Запуск MTProto прокси с Fake TLS"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo -e "📌 Используем домен: ${BLUE}${FAKE_DOMAIN}${NC}"
+    FAKE_DOMAIN="${FAKE_DOMAIN:?set a domen like ozon.ru}"  # Фиксированный домен для Fake TLS
 
-# Генерируем секрет для Fake TLS
-echo "🔑 Генерация Fake TLS секрета... "
+    echo "🚀 Запуск MTProto прокси с Fake TLS"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "📌 Используем домен: ${BLUE}${FAKE_DOMAIN}${NC}"
 
-# Собираем секрет
-SECRET="$(get-secret $FAKE_DOMAIN)"
+    # Генерируем секрет для Fake TLS
+    echo "🔑 Генерация Fake TLS секрета... "
+
+    # Собираем секрет
+    SECRET="$(get-secret $FAKE_DOMAIN)"
+fi
+
 echo -e "   Секрет: ${YELLOW}${SECRET}${NC}"
 echo "   Длина: ${#SECRET} символов"
 
@@ -102,9 +101,4 @@ else
     docker logs ${CONTAINER_NAME}
 fi
 
-if [ -n "$BOTTOKEN" ] && [ -n "$CHATID" ]
-then
-    curl -X POST "https://api.telegram.org/bot$BOTTOKEN/sendMessage" \
-        -d "chat_id=$CHATID" \
-        -d "text=$proxy"
-fi
+
