@@ -9,6 +9,8 @@ then
     source .env
 fi
 
+source utils.sh
+
 CONTAINER_NAME="${CONTAINER_NAME:-mtproto-proxy}"
 PORT="${PORT:-443}"
 FAKE_DOMAIN="${FAKE_DOMAIN:?set a domen like yar1.ru}"  # Фиксированный домен для Fake TLS
@@ -32,21 +34,10 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo -e "📌 Используем домен: ${BLUE}${FAKE_DOMAIN}${NC}"
 
 # Генерируем секрет для Fake TLS
-echo -n "🔑 Генерация Fake TLS секрета... "
-
-# Получаем hex домена ya.ru
-DOMAIN_HEX=$(echo -n $FAKE_DOMAIN | xxd -ps | tr -d '\n')
-echo -e "\n   Hex домена: ${DOMAIN_HEX}"
-
-# Дополняем случайными символами до 30 символов
-DOMAIN_LEN=${#DOMAIN_HEX}
-NEEDED=$((30 - DOMAIN_LEN))
-RANDOM_HEX=$(openssl rand -hex 15 | cut -c1-$NEEDED)
+echo "🔑 Генерация Fake TLS секрета... "
 
 # Собираем секрет
-SECRET="ee${RANDOM_HEX}${DOMAIN_HEX}"
-
-echo -e "   Случайное дополнение: ${RANDOM_HEX}"
+SECRET="$(get-secret $FAKE_DOMAIN)"
 echo -e "   Секрет: ${YELLOW}${SECRET}${NC}"
 echo "   Длина: ${#SECRET} символов"
 
@@ -84,7 +75,6 @@ docker run -d \
 
 # Проверяем результат
 sleep 3
-SERVER_IP=$(curl -s ifconfig.me)
 proxy="tg://proxy?server=${SERVER_IP}&port=${PORT}&secret=${SECRET}"
 if docker ps | grep -q ${CONTAINER_NAME}; then
     echo -e "${GREEN}✅ УСПЕШНО${NC}"
