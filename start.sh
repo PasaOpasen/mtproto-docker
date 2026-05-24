@@ -44,7 +44,7 @@ NEEDED=$((30 - DOMAIN_LEN))
 RANDOM_HEX=$(openssl rand -hex 15 | cut -c1-$NEEDED)
 
 # Собираем секрет
-SECRET="ee${DOMAIN_HEX}${RANDOM_HEX}"
+SECRET="ee${RANDOM_HEX}${DOMAIN_HEX}"
 
 echo -e "   Случайное дополнение: ${RANDOM_HEX}"
 echo -e "   Секрет: ${YELLOW}${SECRET}${NC}"
