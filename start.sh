@@ -2,6 +2,23 @@
 
 # https://habr.com/ru/articles/1010942/
 
+set -e
+
+if [ -f .env ]
+then
+    source .env
+fi
+
+CONTAINER_NAME="${CONTAINER_NAME:-mtproto-proxy}"
+PORT="${PORT:-443}"
+FAKE_DOMAIN="${FAKE_DOMAIN:?set a domen like yar1.ru}"  # Фиксированный домен для Fake TLS
+
+SERVER_IP="${SERVER_IP}"
+if [ -z "${SERVER_IP}" ]
+then
+    SERVER_IP=$(curl -s ifconfig.me)
+fi
+
 # Цвета для красивого вывода
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -9,9 +26,6 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-CONTAINER_NAME="mtproto-proxy"
-PORT="443"
-FAKE_DOMAIN="${1:?set a domen like yar1.ru}"  # Фиксированный домен для Fake TLS
 
 echo "🚀 Запуск MTProto прокси с Fake TLS"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -70,10 +84,9 @@ docker run -d \
 
 # Проверяем результат
 sleep 3
+SERVER_IP=$(curl -s ifconfig.me)
 proxy="tg://proxy?server=${SERVER_IP}&port=${PORT}&secret=${SECRET}"
 if docker ps | grep -q ${CONTAINER_NAME}; then
-    SERVER_IP=$(curl -s ifconfig.me)
-    
     echo -e "${GREEN}✅ УСПЕШНО${NC}"
     echo ""
     echo "📊 ИНФОРМАЦИЯ ДЛЯ ПОДКЛЮЧЕНИЯ:"
