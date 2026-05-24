@@ -70,6 +70,7 @@ docker run -d \
 
 # Проверяем результат
 sleep 3
+proxy="tg://proxy?server=${SERVER_IP}&port=${PORT}&secret=${SECRET}"
 if docker ps | grep -q ${CONTAINER_NAME}; then
     SERVER_IP=$(curl -s ifconfig.me)
     
@@ -83,7 +84,7 @@ if docker ps | grep -q ${CONTAINER_NAME}; then
     echo "🌐 Fake TLS домен: ${FAKE_DOMAIN}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "🔗 Ссылка для Telegram (нажмите для автоподключения):"
-    echo -e "${GREEN}tg://proxy?server=${SERVER_IP}&port=${PORT}&secret=${SECRET}${NC}"
+    echo -e "${GREEN}${proxy}${NC}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     # Сохраняем конфигурацию
@@ -92,7 +93,7 @@ SERVER=${SERVER_IP}
 PORT=${PORT}
 SECRET=${SECRET}
 DOMAIN=${FAKE_DOMAIN}
-LINK=tg://proxy?server=${SERVER_IP}&port=${PORT}&secret=${SECRET}
+LINK=${proxy}
 EOF
     echo "✅ Конфигурация сохранена в mtproto_config.txt"
     
@@ -105,3 +106,9 @@ else
     docker logs ${CONTAINER_NAME}
 fi
 
+if [ -n "$BOTTOKEN" ] && [ -n "$CHATID" ]
+then
+    curl -X POST "https://api.telegram.org/bot$BOTTOKEN/sendMessage" \
+        -d "chat_id=$CHATID" \
+        -d "text=$proxy"
+fi
