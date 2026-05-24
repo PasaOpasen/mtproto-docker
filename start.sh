@@ -51,14 +51,7 @@ echo -e "${GREEN}готово${NC}"
 echo -n "🔍 Проверка порта ${PORT}... "
 if ss -tuln | grep -q ":${PORT} "; then
     echo -e "${YELLOW}порт занят${NC}"
-    # Ищем альтернативный порт
-    for alt_port in 8443 8444 8445; do
-        if ! ss -tuln | grep -q ":${alt_port} "; then
-            PORT=$alt_port
-            echo "   Используем порт: ${PORT}"
-            break
-        fi
-    done
+    exit 1
 else
     echo -e "${GREEN}свободен${NC}"
 fi
