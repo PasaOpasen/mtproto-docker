@@ -24,3 +24,23 @@ function get-secret {
     echo -n "ee${RANDOM_HEX}${DOMAIN_HEX}"
 }
 
+
+function get-server-ip {
+    if [ -n "$SERVER_IP" ]
+    then
+        echo -n "$SERVER_IP"
+    else
+        curl -s ifconfig.me
+    fi
+}
+
+function get-proxy {
+    if [ -z "$PORT" ]
+    then
+        echo "PORT is not set"
+        return 1
+    fi
+    local SERVER_IP="$(get-server-ip)"
+    echo -n "tg://proxy?server=${SERVER_IP}&port=${PORT}&secret=${1:-$SECRET}"
+}
+

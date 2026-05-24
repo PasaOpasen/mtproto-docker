@@ -14,12 +14,7 @@ source utils.sh
 CONTAINER_NAME="${CONTAINER_NAME:-mtproto-proxy}"
 PORT="${PORT:-443}"
 
-SERVER_IP="${SERVER_IP}"
-if [ -z "${SERVER_IP}" ]
-then
-    SERVER_IP=$(curl -s ifconfig.me)
-fi
-
+SERVER_IP="$(get-server-ip)"
 
 if [ -z "$SECRET" ]
 then
@@ -67,7 +62,7 @@ docker run -d \
 
 # Проверяем результат
 sleep 3
-proxy="tg://proxy?server=${SERVER_IP}&port=${PORT}&secret=${SECRET}"
+proxy="$(get-proxy)"
 if docker ps | grep -q ${CONTAINER_NAME}; then
     echo -e "${GREEN}✅ УСПЕШНО${NC}"
     echo ""
