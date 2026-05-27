@@ -35,11 +35,14 @@ fi
 echo -e "   Секрет: ${YELLOW}${SECRET}${NC}"
 echo "   Длина: ${#SECRET} символов"
 
-# Останавливаем старый контейнер, если есть
-echo -n "🛑 Остановка старого контейнера... "
-docker stop ${CONTAINER_NAME} >/dev/null 2>&1
-docker rm ${CONTAINER_NAME} >/dev/null 2>&1
-echo -e "${GREEN}готово${NC}"
+if docker ps -a | grep -q ${CONTAINER_NAME}
+then
+    # Останавливаем старый контейнер, если есть
+    echo -n "🛑 Остановка старого контейнера... "
+    docker stop ${CONTAINER_NAME} >/dev/null 2>&1
+    docker rm ${CONTAINER_NAME} >/dev/null 2>&1
+    echo -e "${GREEN}готово${NC}"
+fi
 
 # Проверяем, свободен ли порт 443
 echo -n "🔍 Проверка порта ${PORT}... "
