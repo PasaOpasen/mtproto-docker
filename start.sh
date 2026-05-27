@@ -54,11 +54,11 @@ fi
 # Запускаем официальный прокси от Telegram
 echo -n "📦 Запуск контейнера... "
 docker run -d \
-  --name ${CONTAINER_NAME} \
-  --restart unless-stopped \
-  -p ${PORT}:443 \
-  -e SECRET="${SECRET}" \
-  telegrammessenger/proxy > /dev/null 2>&1
+    --name ${CONTAINER_NAME} \
+    --restart unless-stopped \
+    -p ${PORT}:443 \
+    -e SECRET="${SECRET}" \
+    telegrammessenger/proxy > /dev/null 2>&1
 
 # Проверяем результат
 sleep 3
