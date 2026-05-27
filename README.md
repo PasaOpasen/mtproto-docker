@@ -9,6 +9,8 @@ dnf install screen make curl + docker
 
 Максимальный `.env`:
 ```sh
+IMPLEMENTAION="<proxy implementation: official (official Telegram image) or mtg (nineseconds/mtg:2)>; official by default"
+
 FAKE_DOMAIN="<domain like yandex.ru, ozon.ru>"  # FAKE TLS DOMAIN
 
 CONTAINER_NAME=mtproto-proxy

@@ -56,12 +56,32 @@ fi
 
 # Запускаем официальный прокси от Telegram
 echo -n "📦 Запуск контейнера... "
-docker run -d \
-    --name ${CONTAINER_NAME} \
-    --restart unless-stopped \
-    -p ${PORT}:443 \
-    -e SECRET="${SECRET}" \
-    telegrammessenger/proxy > /dev/null 2>&1
+if [ "${IMPLEMENTAION:-official}" == "official" ]
+then
+    docker run -d \
+        --name ${CONTAINER_NAME} \
+        --restart unless-stopped \
+        -p ${PORT}:443 \
+        -e SECRET="${SECRET}" \
+        telegrammessenger/proxy > /dev/null 2>&1
+elif [ "${IMPLEMENTAION}" == "mtg" ]
+then
+    cat <<EOF > mtg.toml
+secret = "$SECRET"
+bind-to = "0.0.0.0:443"
+EOF
+
+    docker run -d \
+        --name ${CONTAINER_NAME} \
+        --restart unless-stopped \
+        -p ${PORT}:443 \
+        -v ./mtg.toml:/config/config.toml \
+        nineseconds/mtg:2 > /dev/null 2>&1
+
+else
+    echo "Unknown IMPLEMENTAION=$IMPLEMENTAION"
+    exit 1
+fi
 
 # Проверяем результат
 sleep 3

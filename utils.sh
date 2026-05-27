@@ -15,10 +15,17 @@ function get-secret {
 
     local DOMAIN_HEX=$(echo -n $1 | xxd -ps | tr -d '\n')
 
+    local keylen=30 hexv=15
+    if [ "${IMPLEMENTAION:-official}" == "mtg" ]
+    then
+        keylen=52
+        hexv=16
+    fi
+
     # Дополняем случайными символами до 30 символов
     local DOMAIN_LEN=${#DOMAIN_HEX}
-    local NEEDED=$((30 - DOMAIN_LEN))
-    local RANDOM_HEX=$(openssl rand -hex 15 | cut -c1-$NEEDED)
+    local NEEDED=$((keylen - DOMAIN_LEN))
+    local RANDOM_HEX=$(openssl rand -hex $hexv | cut -c1-$NEEDED)
 
     # Собираем секрет
     echo -n "ee${RANDOM_HEX}${DOMAIN_HEX}"
