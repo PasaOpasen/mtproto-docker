@@ -38,7 +38,7 @@ echo "   Длина: ${#SECRET} символов"
 if docker ps -a | grep -q ${CONTAINER_NAME}
 then
     # Останавливаем старый контейнер, если есть
-    echo -n "🛑 Остановка старого контейнера... "
+    echo -n "🛑 Остановка и удаление старого контейнера... "
     docker stop ${CONTAINER_NAME} >/dev/null 2>&1
     docker rm ${CONTAINER_NAME} >/dev/null 2>&1
     echo -e "${GREEN}готово${NC}"
